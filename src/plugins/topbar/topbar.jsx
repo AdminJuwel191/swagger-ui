@@ -1,5 +1,6 @@
 import React, { cloneElement } from "react"
 import PropTypes from "prop-types"
+import axios from 'axios';
 
 //import "./topbar.less"
 import Logo from "./logo_small.svg"
@@ -13,7 +14,7 @@ export default class Topbar extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    this.state = { url: props.specSelectors.url(), selectedIndex: 0 }
+    this.state = { url: props.specSelectors.url(), selectedIndex: 0, swaggerDocs : [] }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -73,6 +74,12 @@ export default class Topbar extends React.Component {
     const configs = this.props.getConfigs()
     const urls = configs.urls || []
 
+    axios.get(`https://w3qoqcsvja.execute-api.us-east-2.amazonaws.com/test`)
+      .then(res => {
+        this.setState({swaggerDocs: JSON.parse(res.data)})
+        console.log("data " + parsedJson)
+      });
+
     if(urls && urls.length) {
       var targetIndex = this.state.selectedIndex
       let primaryName = configs["urls.primaryName"]
@@ -108,11 +115,16 @@ export default class Topbar extends React.Component {
     if(isFailed) inputStyle.color = "red"
     if(isLoading) inputStyle.color = "#aaa"
 
-    const { urls } = getConfigs()
+    // const { urls } = getConfigs()
     let control = []
     let formOnSubmit = null
 
-    if(urls) {
+
+    const { swaggerDocs } = this.state;
+
+    let urls = swaggerDocs;
+
+    if(urls.length) {
       let rows = []
       urls.forEach((link, i) => {
         rows.push(<option key={i} value={link.url}>{link.name}</option>)
