@@ -74,10 +74,9 @@ export default class Topbar extends React.Component {
     const configs = this.props.getConfigs()
     const urls = configs.urls || []
 
-    axios.get(`https://w3qoqcsvja.execute-api.us-east-2.amazonaws.com/test`)
+    axios.get(`change-this-to-your-end-point-returning-list-of-service-name-and-urls`)
       .then(res => {
-        this.setState({swaggerDocs: JSON.parse(res.data)})
-        console.log("data " + parsedJson)
+        this.setState({swaggerDocs: res.data})
       });
 
     if(urls && urls.length) {
@@ -115,7 +114,6 @@ export default class Topbar extends React.Component {
     if(isFailed) inputStyle.color = "red"
     if(isLoading) inputStyle.color = "#aaa"
 
-    // const { urls } = getConfigs()
     let control = []
     let formOnSubmit = null
 
@@ -123,7 +121,6 @@ export default class Topbar extends React.Component {
     const { swaggerDocs } = this.state;
 
     let urls = swaggerDocs;
-
     if(urls.length) {
       let rows = []
       urls.forEach((link, i) => {
