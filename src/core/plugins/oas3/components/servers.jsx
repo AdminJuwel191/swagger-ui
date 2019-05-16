@@ -32,29 +32,23 @@ export default class Servers extends React.Component {
       getServerVariable
     } = this.props
 
-    if(this.props.currentServer !== nextProps.currentServer) {
-      // Server has changed, we may need to set default values
-      let currentServerDefinition = servers
-        .find(v => v.get("url") === nextProps.currentServer)
+    // Force re-setting default values
+    let currentServerDefinition = servers
+      .find(v => v.get("url") === nextProps.currentServer)
 
-      if(!currentServerDefinition) {
-        return this.setServer(servers.first().get("url"))
-      }
-
-      let currentServerVariableDefs = currentServerDefinition.get("variables") || OrderedMap()
-
-      currentServerVariableDefs.map((val, key) => {
-        let currentValue = getServerVariable(nextProps.currentServer, key)
-        // only set the default value if the user hasn't set one yet
-        if(!currentValue) {
-          setServerVariableValue({
-            server: nextProps.currentServer,
-            key,
-            val: val.get("default") || ""
-          })
-        }
-      })
+    if(!currentServerDefinition) {
+      return this.setServer(servers.first().get("url"))
     }
+
+    let currentServerVariableDefs = currentServerDefinition.get("variables") || OrderedMap()
+
+    currentServerVariableDefs.map((val, key) => {
+      setServerVariableValue({
+        server: nextProps.currentServer,
+        key,
+        val: val.get("default") || ""
+      })
+    })
   }
 
   onServerChange =( e ) => {

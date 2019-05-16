@@ -34,7 +34,7 @@ export default class Topbar extends React.Component {
   onUrlSelect =(e)=> {
     let url = e.target.value || e.target.href
     this.loadSpec(url)
-    this.setSelectedUrl(url)
+    this.setSelectedUrl(url);
     e.preventDefault()
   }
 
@@ -54,7 +54,7 @@ export default class Topbar extends React.Component {
 
   setSelectedUrl = (selectedUrl) => {
     const configs = this.props.getConfigs()
-    const urls = configs.urls || []
+    const urls = configs.urls || this.state.swaggerDocs || []
 
     if(urls && urls.length) {
       if(selectedUrl)
