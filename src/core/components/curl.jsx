@@ -1,26 +1,35 @@
 import React from "react"
 import PropTypes from "prop-types"
-import curlify from "core/curlify"
+import { CopyToClipboard } from "react-copy-to-clipboard"
+import { requestSnippetGenerator_curl_bash } from "../plugins/request-snippets/fn"
 
 export default class Curl extends React.Component {
   static propTypes = {
+    getComponent: PropTypes.func.isRequired,
     request: PropTypes.object.isRequired
   }
 
-  handleFocus(e) {
-    e.target.select()
-    document.execCommand("copy")
-  }
-
   render() {
-    let { request } = this.props
-    let curl = curlify(request)
+    const { request, getComponent } = this.props
+    const curl = requestSnippetGenerator_curl_bash(request)
+    const SyntaxHighlighter = getComponent("SyntaxHighlighter", true)
 
     return (
-      <div>
+      <div className="curl-command">
         <h4>Curl</h4>
-        <div className="copy-paste">
-          <textarea onFocus={this.handleFocus} readOnly="true" className="curl" style={{ whiteSpace: "normal" }} value={curl}></textarea>
+        <div className="copy-to-clipboard">
+            <CopyToClipboard text={curl}><button/></CopyToClipboard>
+        </div>
+        <div>
+          <SyntaxHighlighter
+            language="bash"
+            className="curl microlight"
+            renderPlainText={({ children, PlainTextViewer }) => (
+              <PlainTextViewer className="curl">{children}</PlainTextViewer>
+            )}
+          >
+            {curl}
+          </SyntaxHighlighter>
         </div>
       </div>
     )

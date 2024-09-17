@@ -1,16 +1,17 @@
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
 import ImPropTypes from "react-immutable-proptypes"
-import { helpers } from "swagger-client"
+import { opId } from "swagger-client/es/helpers"
 import { Iterable, fromJS, Map } from "immutable"
-
-const { opId } = helpers
 
 export default class OperationContainer extends PureComponent {
   constructor(props, context) {
     super(props, context)
+
+    const { tryItOutEnabled } = props.getConfigs()
+
     this.state = {
-      tryItOutEnabled: false,
+      tryItOutEnabled,
       executeInProgress: false
     }
   }
@@ -60,14 +61,13 @@ export default class OperationContainer extends PureComponent {
     const showSummary = layoutSelectors.showSummary()
     const operationId = op.getIn(["operation", "__originalOperationId"]) || op.getIn(["operation", "operationId"]) || opId(op.get("operation"), props.path, props.method) || op.get("id")
     const isShownKey = ["operations", props.tag, operationId]
-    const isDeepLinkingEnabled = deepLinking && deepLinking !== "false"
     const allowTryItOut = supportedSubmitMethods.indexOf(props.method) >= 0 && (typeof props.allowTryItOut === "undefined" ?
       props.specSelectors.allowTryItOutFor(props.path, props.method) : props.allowTryItOut)
     const security = op.getIn(["operation", "security"]) || props.specSelectors.security()
 
     return {
       operationId,
-      isDeepLinkingEnabled,
+      isDeepLinkingEnabled: deepLinking,
       showSummary,
       displayOperationId,
       displayRequestDuration,
@@ -90,7 +90,7 @@ export default class OperationContainer extends PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { response, isShown } = nextProps
     const resolvedSubtree = this.getResolvedSubtree()
 
@@ -118,9 +118,12 @@ export default class OperationContainer extends PureComponent {
   }
 
   onTryoutClick =() => {
-    let { specActions, path, method } = this.props
     this.setState({tryItOutEnabled: !this.state.tryItOutEnabled})
-    specActions.clearValidateParams([path, method])
+  }
+
+  onResetClick = (pathMethod) => {
+    const defaultRequestBodyValue = this.props.oas3Selectors.selectDefaultRequestBodyValue(...pathMethod)
+    this.props.oas3Actions.setRequestBodyValue({ value: defaultRequestBodyValue, pathMethod })
   }
 
   onExecute = () => {
@@ -226,6 +229,7 @@ export default class OperationContainer extends PureComponent {
 
         toggleShown={this.toggleShown}
         onTryoutClick={this.onTryoutClick}
+        onResetClick={this.onResetClick}
         onCancelClick={this.onCancelClick}
         onExecute={this.onExecute}
         specPath={specPath}

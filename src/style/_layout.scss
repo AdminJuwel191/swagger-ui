@@ -13,6 +13,16 @@
     flex-direction: column;
 }
 
+.try-out.btn-group {
+    padding: 0;
+    display: flex;
+    flex: 0.1 2 auto;
+}
+
+.try-out__btn {
+    margin-left: 1.25rem;
+}
+
 .opblock-tag
 {
     display: flex;
@@ -81,11 +91,37 @@
         font-size: 14px;
         font-weight: normal;
 
-        flex: 1;
+        flex: 2;
 
         padding: 0 10px;
 
         @include text_body();
+    }
+
+    >div
+    {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        flex: 1 1 150px;
+        font-weight: 400;
+    }
+
+    @media (max-width: 640px) {
+      small
+      {
+        flex: 1;
+      }
+
+      >div
+      {
+          flex: 1;
+      }
+    }
+
+    .info__externaldocs
+    {
+        text-align: right;
     }
 }
 
@@ -96,6 +132,54 @@
     padding: 5px 0;
 
     @include text_code();
+}
+
+.parameter-controls {
+    margin-top: 0.75em;
+}
+
+.examples {
+    &__title {
+        display: block;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-bottom: 0.75em;
+    }
+
+    &__section {
+        margin-top: 1.5em;
+    }
+    &__section-header {
+        font-weight: bold;
+        font-size: .9rem;
+        margin-bottom: .5rem;
+        // color: #555;
+    }
+}
+
+.examples-select {
+    margin-bottom: .75em;
+    display: inline-block;
+    .examples-select-element {
+      width: 100%;
+    }
+    &__section-label {
+        font-weight: bold;
+        font-size: .9rem;
+        margin-right: .5rem;
+    }
+}
+
+.example {
+    &__section {
+        margin-top: 1.5em;
+    }
+    &__section-header {
+        font-weight: bold;
+        font-size: .9rem;
+        margin-bottom: .5rem;
+        // color: #555;
+    }
 }
 
 .view-line-link
@@ -221,9 +305,12 @@
     {
         font-size: 14px;
         font-weight: bold;
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
 
         min-width: 80px;
-        padding: 6px 15px;
+        padding: 6px 0;
 
         text-align: center;
 
@@ -249,10 +336,20 @@
 
         word-break: break-word;
 
-        padding: 0 10px;
-
         @include text_code();
 
+    }
+
+    .opblock-summary-path
+    {
+        flex-shrink: 1;
+    }
+
+    @media (max-width: 640px) {
+      .opblock-summary-path
+      {
+        max-width: 100%;
+      }
     }
 
     .opblock-summary-path__deprecated
@@ -269,11 +366,29 @@
     {
         font-size: 13px;
 
-        flex: 1 1 auto;
-
         word-break: break-word;
 
         @include text_body();
+    }
+
+    .opblock-summary-path-description-wrapper
+    {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0px 10px;
+
+        padding: 0 10px;
+
+        width: 100%;
+    }
+
+    @media (max-width: 550px) {
+      .opblock-summary-path-description-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
 
     .opblock-summary
@@ -303,6 +418,10 @@
             {
                 width: 18px;
                 margin: 0 5px;
+
+                &.copy-to-clipboard {
+                    width: 24px;
+                }
             }
         }
     }
@@ -374,12 +493,27 @@
     }
 }
 
+.filter, .download-url-wrapper
+{
+    .failed
+    {
+        color: red;
+    }
+
+    .loading
+    {
+        color: #aaa;
+    }
+}
+
+.model-example {
+    margin-top: 1em;
+}
 
 .tab
 {
     display: flex;
 
-    margin: 20px 0 10px 0;
     padding: 0;
 
     list-style: none;
@@ -420,6 +554,17 @@
         &.active
         {
             font-weight: bold;
+        }
+
+        button.tablinks
+        {
+            background: none;
+            border: 0;
+            padding: 0;
+
+            color: inherit;
+            font-family: inherit;
+            font-weight: inherit;
         }
     }
 }
@@ -506,6 +651,13 @@
 
         @include text_body();
     }
+
+    .curl
+    {
+      overflow-y: auto;
+      max-height: 400px;
+      min-height: 6em;
+    }
 }
 
 .response-col_status
@@ -536,44 +688,14 @@
 
         @include text_code($response-col-links-font-color);
     }
-}
 
-.response-col_description__inner
-{
-    div.markdown, div.renderedMarkdown
+    .operation-link
     {
-        font-size: 12px;
-        font-style: italic;
+        margin-bottom: 1.5em;
 
-        display: block;
-
-        margin: 0;
-        padding: 10px;
-
-        border-radius: 4px;
-        background: $response-col-description-inner-markdown-background-color;
-
-        @include text_code($response-col-description-inner-markdown-font-color);
-
-        p
+        .description
         {
-            margin: 0;
-            @include text_code($response-col-description-inner-markdown-font-color);
-        }
-
-        a
-        {
-            @include text_code($response-col-description-inner-markdown-link-font-color);
-            text-decoration: underline;
-            &:hover {
-                color: $response-col-description-inner-markdown-link-font-color-hover;
-            }
-        }
-
-        th
-        {
-            @include text_code($response-col-description-inner-markdown-font-color);
-            border-bottom: 1px solid $response-col-description-inner-markdown-font-color;
+            margin-bottom: 0.5em;
         }
     }
 }
@@ -589,7 +711,7 @@
   }
 }
 
-.opblock-body pre
+.opblock-body pre.microlight
 {
     font-size: 12px;
 
@@ -607,10 +729,12 @@
 
     overflow-wrap: break-word;
     @include text_code($opblock-body-font-color);
-    span
-    {
-        color: $opblock-body-font-color !important;
-    }
+
+    // disabled to have syntax highliting with react-syntax-highlight
+    // span
+    // {
+    //     color: $opblock-body-font-color !important;
+    // }
 
     .headerline
     {
@@ -625,24 +749,34 @@
     overflow-y: auto;
     max-height: 400px;
     min-height: 6em;
+
+    code {
+        white-space: pre-wrap !important;
+        word-break: break-all;
+    }
   }
+}
+.curl-command {
+  position: relative;
 }
 
 .download-contents {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  cursor: pointer;
   background: #7d8293;
   text-align: center;
   padding: 5px;
+  border: none;
   border-radius: 4px;
   font-family: sans-serif;
   font-weight: 600;
   color: white;
   font-size: 14px;
   height: 30px;
-  width: 75px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 .scheme-container
@@ -657,24 +791,71 @@
     {
         display: flex;
         align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
 
-         > label
+        gap: 10px;
+
+        /*
+        This wraps the servers or schemes selector.
+        This was added to make sure the Authorize button is always on the right
+        and the servers or schemes selector is always on the left.
+        */
+        > .schemes-server-container
         {
-            font-size: 12px;
-            font-weight: bold;
-
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
 
-            margin: -20px 15px 0 0;
+            gap: 10px;
 
-            @include text_headline();
-
-            select
+            > label
             {
-                min-width: 130px;
+                font-size: 12px;
+                font-weight: bold;
 
-                text-transform: uppercase;
+                display: flex;
+                flex-direction: column;
+
+                margin: -20px 15px 0 0;
+
+                @include text_headline();
+
+                select
+                {
+                    min-width: 130px;
+
+                    text-transform: uppercase;
+                }
+            }
+        }
+
+        /*
+        This checks if the schemes-server-container is not present and
+        aligns the authorize button to the right
+        */
+        &:not(:has(.schemes-server-container))
+        {
+            justify-content: flex-end;
+        }
+
+        /*
+        Target Authorize Button in schemes wrapper
+        This was added here to fix responsiveness issues with the authorize button
+        within the schemes wrapper without affecting other instances of it's usage
+        */
+        .auth-wrapper
+        {
+            flex: none;
+            justify-content: start;
+
+            .authorize
+            {
+                padding-right: 20px;
+                margin: 0;
+
+                display: flex;
+
+                flex-wrap: nowrap;
             }
         }
     }
@@ -744,19 +925,38 @@
     }
 }
 
-.response-content-type {
-  padding-top: 1em;
+.response-controls {
+    padding-top: 1em;
+    display: flex;
+}
 
-  &.controls-accept-header {
-    select {
-      border-color: $response-content-type-controls-accept-header-select-border-color;
+.response-control-media-type {
+    margin-right: 1em;
+
+    &--accept-controller {
+        select {
+            border-color: $response-content-type-controls-accept-header-select-border-color;
+        }
     }
 
-    small {
-      color: $response-content-type-controls-accept-header-small-font-color;
-      font-size: .7em;
+    &__accept-message {
+        color: $response-content-type-controls-accept-header-small-font-color;
+        font-size: .7em;
     }
-  }
+
+    &__title {
+        display: block;
+        margin-bottom: 0.2em;
+        font-size: .7em;
+    }
+}
+
+.response-control-examples {
+    &__title {
+        display: block;
+        margin-bottom: 0.2em;
+        font-size: .7em;
+    }
 }
 
 @keyframes blinker
@@ -767,6 +967,30 @@
     }
 }
 
+.hidden
+{
+    display: none;
+}
+
+.no-margin
+{
+    height: auto;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.float-right
+{
+    float: right;
+}
+
+.svg-assets
+{
+    position: absolute;
+    width: 0;
+    height: 0;
+}
 
 section
 {
@@ -787,6 +1011,12 @@ a.nostyle {
     color: inherit;
     cursor: pointer;
   }
+}
+
+.fallback
+{
+    padding: 1em;
+    color: #aaa;
 }
 
 .version-pragma {
@@ -814,4 +1044,28 @@ a.nostyle {
       white-space: pre;
     }
   }
+}
+
+.opblock-link
+{
+    font-weight: normal;
+
+    &.shown
+    {
+        font-weight: bold;
+    }
+}
+
+span
+{
+    &.token-string
+    {
+        color: #555;
+    }
+
+    &.token-not-formatted
+    {
+        color: #555;
+        font-weight: bold;
+    }
 }

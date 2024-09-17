@@ -3,9 +3,9 @@ import { createStore, applyMiddleware, bindActionCreators, compose } from "redux
 import Im, { fromJS, Map } from "immutable"
 import deepExtend from "deep-extend"
 import { combineReducers } from "redux-immutable"
-import serializeError from "serialize-error"
-import assignDeep from "@kyleshockey/object-assign-deep"
-import { NEW_THROWN_ERR } from "corePlugins/err/actions"
+import { serializeError } from "serialize-error"
+import merge from "lodash/merge"
+import { NEW_THROWN_ERR } from "core/plugins/err/actions"
 import win from "core/window"
 
 import { systemThunkMiddleware, isFn, objMap, objReduce, isObject, isArray, isFunc } from "core/utils"
@@ -312,7 +312,7 @@ export default class Store {
 
 function combinePlugins(plugins, toolbox) {
   if(isObject(plugins) && !isArray(plugins)) {
-    return assignDeep({}, plugins)
+    return merge({}, plugins)
   }
 
   if(isFunc(plugins)) {
@@ -321,8 +321,8 @@ function combinePlugins(plugins, toolbox) {
 
   if(isArray(plugins)) {
     return plugins
-    .map(plugin => combinePlugins(plugin, toolbox))
-    .reduce(systemExtend, {})
+      .map(plugin => combinePlugins(plugin, toolbox))
+      .reduce(systemExtend, { components: toolbox.getComponents() })
   }
 
   return {}
@@ -389,23 +389,46 @@ function systemExtend(dest={}, src={}) {
   if(isObject(statePlugins)) {
     for(let namespace in statePlugins) {
       const namespaceObj = statePlugins[namespace]
-      if(!isObject(namespaceObj) || !isObject(namespaceObj.wrapActions)) {
+      if(!isObject(namespaceObj)) {
         continue
       }
-      const { wrapActions } = namespaceObj
-      for(let actionName in wrapActions) {
-        let action = wrapActions[actionName]
 
-        // This should only happen if dest is the first plugin, since invocations after that will ensure its an array
-        if(!Array.isArray(action)) {
-          action = [action]
-          wrapActions[actionName] = action // Put the value inside an array
+      const { wrapActions, wrapSelectors } = namespaceObj
+
+      // process action wrapping
+      if (isObject(wrapActions)) {
+        for(let actionName in wrapActions) {
+          let action = wrapActions[actionName]
+
+          // This should only happen if dest is the first plugin, since invocations after that will ensure its an array
+          if(!Array.isArray(action)) {
+            action = [action]
+            wrapActions[actionName] = action // Put the value inside an array
+          }
+
+          if(src && src.statePlugins && src.statePlugins[namespace] && src.statePlugins[namespace].wrapActions && src.statePlugins[namespace].wrapActions[actionName]) {
+            src.statePlugins[namespace].wrapActions[actionName] = wrapActions[actionName].concat(src.statePlugins[namespace].wrapActions[actionName])
+          }
+
         }
+      }
 
-        if(src && src.statePlugins && src.statePlugins[namespace] && src.statePlugins[namespace].wrapActions && src.statePlugins[namespace].wrapActions[actionName]) {
-          src.statePlugins[namespace].wrapActions[actionName] = wrapActions[actionName].concat(src.statePlugins[namespace].wrapActions[actionName])
+      // process selector wrapping
+      if (isObject(wrapSelectors)) {
+        for(let selectorName in wrapSelectors) {
+          let selector = wrapSelectors[selectorName]
+
+          // This should only happen if dest is the first plugin, since invocations after that will ensure its an array
+          if(!Array.isArray(selector)) {
+            selector = [selector]
+            wrapSelectors[selectorName] = selector // Put the value inside an array
+          }
+
+          if(src && src.statePlugins && src.statePlugins[namespace] && src.statePlugins[namespace].wrapSelectors && src.statePlugins[namespace].wrapSelectors[selectorName]) {
+            src.statePlugins[namespace].wrapSelectors[selectorName] = wrapSelectors[selectorName].concat(src.statePlugins[namespace].wrapSelectors[selectorName])
+          }
+
         }
-
       }
     }
   }
